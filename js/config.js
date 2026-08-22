@@ -44,10 +44,10 @@ const CONFIG = {
 
   // ---------- Teks vibe (opsional, tampil di bawah, tidak wajib) ----------
   VIBE_LINES: [
-    'Menyusun orbit paling rapi biar semuanya menyatu ✨',
-    'Sedikit lagi mencapai orbit terbesar 🌌',
-    'Setiap gabungan bikin skor makin ngebut 🚀',
-    'Tetap di sini, orbit berikutnya bakal lebih gede 🔥',
+    'Menyusun orbit paling rapi biar semuanya menyatu',
+    'Sedikit lagi mencapai orbit terbesar',
+    'Setiap gabungan bikin skor makin ngebut',
+    'Tetap di sini, orbit berikutnya bakal lebih gede',
     'Chat, tebak orbit apa yang muncul selanjutnya!'
   ],
   VIBE_ROTATE_MS: 6000,
