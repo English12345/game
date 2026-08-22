@@ -3,17 +3,7 @@
 //  Ditulis dari nol, ringan, cukup untuk gameplay "merge orbs".
 // ===========================================================
 
-const TIER_COLORS = [
-  ['#8fd8ff', '#2f8fd6'], // tier 0
-  ['#9dffd0', '#22b876'], // tier 1
-  ['#ffe08a', '#d69a1f'], // tier 2
-  ['#ffb2e0', '#d1439c'], // tier 3
-  ['#c6a6ff', '#7c4fd6'], // tier 4
-  ['#ff9d9d', '#d43e3e'], // tier 5
-  ['#ffd27a', '#e08a1c'], // tier 6
-  ['#a6f5ff', '#22b7c9'], // tier 7
-  ['#ffffff', '#ffcc66'], // tier 8 (max, golden)
-];
+// Warna kini datang dari js/planets.js (PLANETS array) — lihat drawPlanet().
 
 function radiusForTier(tier){
   return CONFIG.BASE_RADIUS * Math.pow(CONFIG.RADIUS_GROWTH, tier);

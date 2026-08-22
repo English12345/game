@@ -43,6 +43,7 @@ class Game {
     this.scoreEl = document.getElementById('scoreValue');
     this.roundEl = document.getElementById('roundValue');
     this.nextOrbEl = document.getElementById('nextOrbPreview');
+    this.nextOrbLabelEl = document.getElementById('nextOrbLabel');
     this.comboEl = document.getElementById('comboCallout');
     this.dangerLineEl = document.getElementById('dangerLine');
 
@@ -62,15 +63,16 @@ class Game {
 
   updateNextOrbPreview(){
     const tier = this.ai.peekNextTier();
-    const [c1] = TIER_COLORS[tier];
+    const p = planetFor(tier);
     const r = radiusForTier(tier);
-    const size = Math.max(18, Math.min(40, r*1.1));
+    const size = Math.max(20, Math.min(44, r*1.1));
     this.nextOrbEl.style.width = size+'px';
     this.nextOrbEl.style.height = size+'px';
     this.nextOrbEl.style.background =
-      `radial-gradient(circle at 32% 28%, #fff, ${c1} 55%, ${TIER_COLORS[tier][1]} 100%)`;
-    this.nextOrbEl.style.boxShadow = `0 0 16px ${c1}99`;
+      `radial-gradient(circle at 32% 28%, #fff, ${p.base1} 55%, ${p.base2} 100%)`;
+    this.nextOrbEl.style.boxShadow = `0 0 16px ${p.base1}99`;
     this.nextOrbEl.style.transform = 'scale(1.12)';
+    if(this.nextOrbLabelEl) this.nextOrbLabelEl.textContent = p.name;
     setTimeout(()=>{ this.nextOrbEl.style.transform = 'scale(1)'; }, 180);
   }
 
@@ -81,9 +83,9 @@ class Game {
   }
 
   burst(x, y, tier, count=14){
-    const [c1] = TIER_COLORS[tier] || TIER_COLORS[0];
+    const p = planetFor(tier);
     for(let i=0;i<count;i++){
-      this.particles.push(new Particle(x, y, c1));
+      this.particles.push(new Particle(x, y, p.particle));
     }
   }
 
@@ -162,35 +164,15 @@ class Game {
     }
   }
 
-  render(){
+  render(time){
     const ctx = this.ctx;
     ctx.clearRect(0,0,this.dispW,this.dispH);
 
-    // danger line position sync (CSS already draws it, keep in sync just in case of resize)
-    // balls
-    for(const b of this.world.balls){
+    // planets (diurutkan biar yang besar/matahari digambar belakangan -> tidak ketutup)
+    const sorted = [...this.world.balls].sort((a,b)=> a.tier - b.tier);
+    for(const b of sorted){
       const x = b.x*this.scaleX, y = b.y*this.scaleY, r = b.r*this.scaleX*b.scaleFx;
-      const [c1,c2] = TIER_COLORS[b.tier] || TIER_COLORS[0];
-
-      const grad = ctx.createRadialGradient(x - r*0.3, y - r*0.35, r*0.1, x, y, r);
-      grad.addColorStop(0, '#ffffff');
-      grad.addColorStop(0.35, c1);
-      grad.addColorStop(1, c2);
-
-      ctx.save();
-      ctx.shadowColor = c1;
-      ctx.shadowBlur = 14;
-      ctx.beginPath();
-      ctx.arc(x,y,r,0,Math.PI*2);
-      ctx.fillStyle = grad;
-      ctx.fill();
-      ctx.restore();
-
-      ctx.beginPath();
-      ctx.arc(x,y,r,0,Math.PI*2);
-      ctx.lineWidth = 1.2;
-      ctx.strokeStyle = 'rgba(255,255,255,0.35)';
-      ctx.stroke();
+      drawPlanet(ctx, x, y, r, b.tier, time);
     }
 
     // particles

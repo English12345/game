@@ -144,14 +144,43 @@ class FacecamLoop {
     if(this.playlist.length === 0 || this.enabled) return;
     this.enabled = true;
     this._playNext();
+    this._watchStall();
+  }
+
+  // Kalau video tiba-tiba berhenti (autoplay diblok / stall jaringan),
+  // coba play() lagi tiap 2 detik supaya tidak "macet" di 1 frame.
+  _watchStall(){
+    if(this._stallTimer) clearInterval(this._stallTimer);
+    this._stallTimer = setInterval(()=>{
+      if(!this.enabled) return;
+      if(this.video.paused && this.video.readyState >= 2){
+        this.video.play().catch(()=>{});
+      }
+    }, 2000);
   }
 
   _playNext(){
     if(!this.enabled) return;
     if(this.queue.length === 0) this._refillQueue();
     const next = this.queue.shift();
+    this.video.pause();
     this.video.src = next;
-    this.video.play().catch(()=>{});
+    this.video.load();
+
+    const tryPlay = () => {
+      this.video.play().catch(()=>{
+        // akan dicoba lagi otomatis oleh _watchStall(), atau saat user tap
+      });
+    };
+    this.video.oncanplay = tryPlay;
+    tryPlay();
+
     this.video.onended = () => this._playNext();
+  }
+
+  // Dipanggil ulang dari gesture tap pertama user untuk memastikan
+  // video benar-benar jalan di browser yang ketat soal autoplay.
+  kick(){
+    if(this.video.paused) this.video.play().catch(()=>{});
   }
 }

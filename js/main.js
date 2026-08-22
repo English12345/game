@@ -1,5 +1,8 @@
 // ===========================================================
-//  MAIN — inisialisasi game, audio, dan media loop
+//  MAIN — inisialisasi game, audio, media loop, dan layar
+//  pembuka "Tap untuk Mulai" (wajib ada 1x sentuhan supaya
+//  browser mengizinkan suara + fullscreen — ini aturan
+//  keamanan browser dan tidak bisa dilewati sama sekali).
 // ===========================================================
 (function(){
 
@@ -8,6 +11,8 @@
   const voiceoverPlayer = document.getElementById('voiceoverPlayer');
   const facecamVideo = document.getElementById('facecamVideo');
   const vibeTextEl = document.getElementById('vibeText');
+  const startOverlay = document.getElementById('startOverlay');
+  const startBtn = document.getElementById('startBtn');
 
   const game = new Game(gameCanvas);
   const stars = new Starfield(bgCanvas);
@@ -27,37 +32,58 @@
   setInterval(rotateVibe, CONFIG.VIBE_ROTATE_MS);
 
   // Main render loop
+  let loopStarted = false;
   function loop(now){
     game.step(now);
-    game.render();
+    game.render(now);
     stars.draw(now);
     requestAnimationFrame(loop);
+  }
+
+  function requestFullscreenSafe(){
+    const el = document.documentElement;
+    const req = el.requestFullscreen || el.webkitRequestFullscreen ||
+                el.mozRequestFullScreen || el.msRequestFullscreen;
+    if(req){
+      req.call(el).catch(()=>{ /* sebagian browser/HP tidak dukung, tidak apa2 */ });
+    }
+    if(screen.orientation && screen.orientation.lock){
+      screen.orientation.lock('portrait').catch(()=>{});
+    }
+  }
+
+  function startExperience(){
+    requestFullscreenSafe();
+
+    sfx.unlock();
+    voiceover.start();
+    voiceoverPlayer.play().catch(()=>{});
+
+    facecam.kick();
+
+    if(!loopStarted){
+      loopStarted = true;
+      requestAnimationFrame(loop);
+    }
+
+    startOverlay.classList.add('hidden');
   }
 
   async function boot(){
     await voiceover.init();
     await facecam.init();
-    facecam.start();
-    requestAnimationFrame(loop);
+    facecam.start(); // mulai loop video (muted) di belakang layar pembuka juga
 
-    // Sebagian besar browser memblokir autoplay audio dengan suara sebelum
-    // ada interaksi user. Untuk siaran live (OBS browser source), audio
-    // biasanya diizinkan; sebagai jaga-jaga kita juga coba start begitu
-    // ada klik/tap/keydown pertama.
-    sfx.unlock();
-    voiceover.start();
+    startBtn.addEventListener('click', startExperience);
+    startOverlay.addEventListener('click', startExperience);
 
-    const unlockOnce = () => {
-      sfx.unlock();
-      voiceover.player.play().catch(()=>{});
-      voiceover.start();
-      window.removeEventListener('click', unlockOnce);
-      window.removeEventListener('keydown', unlockOnce);
-      window.removeEventListener('touchstart', unlockOnce);
-    };
-    window.addEventListener('click', unlockOnce);
-    window.addEventListener('keydown', unlockOnce);
-    window.addEventListener('touchstart', unlockOnce);
+    // Jika halaman dibuka di dalam OBS Browser Source (audio & fullscreen
+    // biasanya sudah diizinkan otomatis oleh OBS), langsung mulai tanpa
+    // menunggu tap supaya tidak ada layar pembuka yang tertangkap kamera.
+    const isProbablyObs = /OBS/i.test(navigator.userAgent) || window.obsstudio;
+    if(isProbablyObs){
+      startExperience();
+    }
   }
 
   boot();
