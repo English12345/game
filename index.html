@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Orbit Merge — Live Satisfying Game</title>
+<meta name="description" content="Orbit Merge: game satisfying auto-play untuk live streaming YouTube.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div id="stage">
+
+    <!-- Ambient background -->
+    <canvas id="bgCanvas"></canvas>
+
+    <!-- Top HUD -->
+    <div id="hud">
+      <div class="hud-block hud-left">
+        <div class="hud-label">SKOR</div>
+        <div class="hud-value" id="scoreValue">0</div>
+        <div class="hud-sub" id="roundValue">Ronde 1</div>
+      </div>
+
+      <div class="hud-block hud-center">
+        <div class="next-label">BERIKUTNYA</div>
+        <div class="next-orb" id="nextOrbPreview"></div>
+      </div>
+
+      <div class="hud-block hud-right">
+        <div class="facecam-wrap" id="facecamWrap">
+          <video id="facecamVideo" muted playsinline autoplay loop></video>
+          <div class="facecam-ring"></div>
+        </div>
+        <div class="live-badge"><span class="dot"></span>LIVE</div>
+      </div>
+    </div>
+
+    <!-- Combo callout -->
+    <div id="comboCallout"></div>
+
+    <!-- Game canvas -->
+    <div id="gameFrame">
+      <canvas id="gameCanvas"></canvas>
+      <div id="dangerLine"></div>
+    </div>
+
+    <!-- Bottom caption / subtitle for voiceover (optional visual aid) -->
+    <div id="bottomBar">
+      <div id="vibeText">Menyusun orbit paling rapi biar semuanya menyatu ✨</div>
+    </div>
+
+  </div>
+
+  <!-- hidden audio element driven by js for voiceover playback -->
+  <audio id="voiceoverPlayer" preload="auto"></audio>
+
+  <script src="js/config.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/media-loop.js"></script>
+  <script src="js/physics.js"></script>
+  <script src="js/autoplay.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/background.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
