@@ -126,11 +126,19 @@ html,body{
 }
 
 .facecam-wrap video{
+  position:absolute;
+  inset:0;
   width:100%;
   height:100%;
   object-fit:cover;
   display:block;
   background:#000;
+  opacity:0;
+  transition:opacity 0.35s ease;
+}
+
+.facecam-wrap video.fc-active{
+  opacity:1;
 }
 
 .facecam-ring{
