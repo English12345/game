@@ -41,7 +41,7 @@ const CONFIG = {
   // membingungkan penonton baru. Begitu jumlah matahari di papan
   // mencapai angka ini, semuanya meledak sekaligus (supernova) dan
   // papan direset bersih, lalu lanjut ke ronde berikutnya.
-  MAX_SUNS_ON_BOARD: 5,
+  MAX_SUNS_ON_BOARD: 4,
 
   // Bobot kemunculan tier saat spawn (index 0 = tier termudah)
   SPAWN_WEIGHTS: [40, 30, 18, 8, 4],

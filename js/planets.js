@@ -66,9 +66,10 @@ const PLANETS = [
   },
   { // tier 8 (max) — Matahari
     name: 'Matahari',
-    base1: '#fffbe0', base2: '#ff4d1f',
-    rim: '#ffffff',
-    particle: '#ffcc66',
+    base1: '#fff4c2', base2: '#ff2d1f',
+    base3: '#c40e00',
+    rim: '#ff5a3c',
+    particle: '#ff6a3d',
     isSun: true,
   },
 ];
@@ -87,20 +88,24 @@ function drawPlanet(ctx, x, y, r, tier, time){
 
   // --- Corona / glow luar untuk Matahari ---
   if(p.isSun){
-    const pulse = 1 + Math.sin(time*0.003)*0.08;
-    const flareR = r * (2.0 * pulse);
-    const glow = ctx.createRadialGradient(x,y, r*0.4, x,y, flareR);
-    glow.addColorStop(0, 'rgba(255,204,102,0.6)');
-    glow.addColorStop(0.45, 'rgba(255,120,50,0.3)');
-    glow.addColorStop(1, 'rgba(255,90,40,0)');
+    const pulse = 1 + Math.sin(time*0.003)*0.07;
+    // Corona diperkecil (dari 2.0x jadi 1.5x) supaya tidak terlalu
+    // mendominasi layar saat matahari muncul, tapi warnanya dibuat
+    // merah menyala biar tetap terasa premium & mencolok.
+    const flareR = r * (1.5 * pulse);
+    const glow = ctx.createRadialGradient(x,y, r*0.5, x,y, flareR);
+    glow.addColorStop(0, 'rgba(255,90,40,0.65)');
+    glow.addColorStop(0.4, 'rgba(255,45,20,0.4)');
+    glow.addColorStop(0.75, 'rgba(220,10,0,0.18)');
+    glow.addColorStop(1, 'rgba(200,0,0,0)');
     ctx.fillStyle = glow;
     ctx.beginPath();
     ctx.arc(x,y,flareR,0,Math.PI*2);
     ctx.fill();
 
-    // lidah api kecil di sekeliling matahari
+    // lidah api kecil di sekeliling matahari, merah-oranye menyala
     ctx.save();
-    ctx.strokeStyle = 'rgba(255,204,120,0.55)';
+    ctx.strokeStyle = 'rgba(255,70,30,0.7)';
     ctx.lineWidth = r*0.09;
     ctx.lineCap = 'round';
     for(let i=0;i<8;i++){
@@ -159,14 +164,23 @@ function drawPlanet(ctx, x, y, r, tier, time){
     x - r*0.35, y - r*0.4, r*0.05,
     x, y, r*1.05
   );
-  grad.addColorStop(0, '#ffffff');
-  grad.addColorStop(0.2, p.base1);
-  grad.addColorStop(0.7, p.base1);
-  grad.addColorStop(1, p.base2);
+  if(p.isSun){
+    // inti kuning terang -> oranye -> merah menyala di tepi, biar
+    // terasa panas & premium, bukan cuma oranye pucat
+    grad.addColorStop(0, '#ffffff');
+    grad.addColorStop(0.18, p.base1);
+    grad.addColorStop(0.5, p.base2);
+    grad.addColorStop(1, p.base3);
+  }else{
+    grad.addColorStop(0, '#ffffff');
+    grad.addColorStop(0.2, p.base1);
+    grad.addColorStop(0.7, p.base1);
+    grad.addColorStop(1, p.base2);
+  }
 
   ctx.save();
-  ctx.shadowColor = p.isSun ? '#ffb347' : p.base1;
-  ctx.shadowBlur = p.isSun ? 30 : 14;
+  ctx.shadowColor = p.isSun ? '#ff3b1f' : p.base1;
+  ctx.shadowBlur = p.isSun ? 34 : 14;
   ctx.beginPath();
   ctx.arc(x,y,r,0,Math.PI*2);
   ctx.fillStyle = grad;
