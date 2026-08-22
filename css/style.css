@@ -28,6 +28,8 @@ html,body{
 
 #stage{
   position:relative;
+  display:flex;
+  flex-direction:column;
   width:100vw;
   height:100vh;
   height:100dvh;
@@ -35,8 +37,10 @@ html,body{
   margin:0 auto;
   overflow:hidden;
   background:
-    radial-gradient(circle at 20% 0%, rgba(124,108,255,0.25), transparent 55%),
-    radial-gradient(circle at 85% 15%, rgba(53,230,224,0.15), transparent 50%),
+    radial-gradient(circle at 20% 0%, rgba(124,108,255,0.3), transparent 55%),
+    radial-gradient(circle at 85% 15%, rgba(53,230,224,0.2), transparent 50%),
+    radial-gradient(circle at 15% 90%, rgba(255,111,165,0.16), transparent 55%),
+    radial-gradient(circle at 90% 85%, rgba(255,204,102,0.12), transparent 50%),
     linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-nebula) 100%);
 }
 
@@ -53,6 +57,7 @@ html,body{
 #hud{
   position:relative;
   z-index:5;
+  flex:0 0 auto;
   display:flex;
   align-items:flex-start;
   justify-content:space-between;
@@ -191,13 +196,27 @@ html,body{
   100%{ opacity:0; transform:translate(-50%,-60%) scale(1); }
 }
 
-/* -------------- Game frame -------------- */
-#gameFrame{
+/* -------------- Game area / frame -------------- */
+/* #gameArea takes up all leftover vertical space between the HUD
+   and the bottom bar, and centers #gameFrame inside it — this is
+   what keeps the layout proportional instead of clumping
+   everything near the top when the stage is tall (fullscreen). */
+#gameArea{
   position:relative;
   z-index:2;
-  margin:6px auto 0;
-  width:92%;
-  max-width:420px;
+  flex:1 1 auto;
+  min-height:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:4px 14px 10px;
+}
+
+#gameFrame{
+  position:relative;
+  height:100%;
+  width:auto;
+  max-width:min(420px, 100%);
   aspect-ratio: 3 / 4.6;
   border-radius:26px;
   background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
@@ -230,6 +249,7 @@ html,body{
 #bottomBar{
   position:relative;
   z-index:5;
+  flex:0 0 auto;
   text-align:center;
   padding:14px 20px 20px;
 }
@@ -327,5 +347,10 @@ html,body{
 /* -------------- Responsive -------------- */
 @media (max-height:700px){
   .hud-value{ font-size:26px; }
+  #gameArea{ padding-top:0; padding-bottom:6px; }
   #gameFrame{ aspect-ratio:3/4.1; }
+}
+
+@media (max-width:360px){
+  .facecam-wrap{ width:84px; height:84px; }
 }
