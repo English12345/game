@@ -7,8 +7,9 @@ betah nonton lama karena visual & suara yang satisfying tanpa henti.
 ## Fitur
 
 - **Autoplay penuh** — tidak perlu ada yang mengontrol, game jalan sendiri 24/7, cocok untuk live non-stop.
-- **Visual premium** — tema luar angkasa (nebula, starfield, glow orb), bukan tampilan "template murahan".
-- **Merge orb yang satisfying** — orb dengan tier sama bertabrakan → menyatu jadi orb lebih besar, dengan partikel & efek combo.
+- **Visual premium** — tema luar angkasa (nebula, starfield, planet 3D kaca berkilau), bukan tampilan "template murahan".
+- **Planet asli, bukan bulatan polos** — urut dari kecil ke besar: Bulan → Merkurius → Mars → Venus → Bumi → Uranus → Saturnus (bercincin) → Jupiter (bercorak pita) → **Matahari** (menyala-nyala, glow berdenyut). Tiap planet punya gradient 3D + highlight kaca + rim light.
+- **Merge planet yang satisfying** — dua planet setara bertabrakan → menyatu jadi planet berikutnya yang lebih besar, dengan partikel & efek combo.
 - **Efek suara 100% aman hak cipta** — semua SFX (drop, merge, combo, thud, reset) di-generate langsung lewat Web Audio API, bukan sample dari orang lain. Aman untuk monetisasi YouTube.
 - **Voice over otomatis** — tinggal upload file `1.mp3`, `2.mp3`, `3.mp3`, dst ke folder `assets/voiceover/`. Game otomatis mendeteksi, mengacak urutan, dan memutar berulang selamanya (loop) dengan jeda natural di antaranya.
 - **Video "orang main" otomatis** — sama seperti voiceover, tinggal upload `1.mp4`, `2.mp4`, dst ke `assets/facecam/`. Ditampilkan sebagai lingkaran kecil di HUD atas, otomatis mute, diacak & loop terus.
@@ -52,6 +53,28 @@ orbit-merge/
 > Kenapa tidak buka `index.html` langsung dengan double-click? Karena fitur
 > auto-deteksi file voiceover/facecam butuh server (bukan `file://`).
 > GitHub Pages nanti otomatis jadi server, jadi ini hanya perlu untuk testing lokal.
+> `serve.py` versi ini sudah mendukung *HTTP Range request*, jadi video
+> facecam akan diputar lancar (server Python bawaan biasanya TIDAK
+> mendukung ini, yang bisa membuat video terlihat "macet"/hanya
+> menampilkan 1 frame diam).
+
+## Kenapa Ada Layar "Tap untuk Mulai"?
+
+Semua browser (Chrome, Safari, dll) **memblokir suara otomatis dan
+fullscreen otomatis** kalau belum ada sentuhan/klik dari pengguna —
+ini aturan keamanan browser dan tidak bisa dilewati dengan cara
+apa pun (termasuk lewat kode). Karena itu game ini menampilkan satu
+layar pembuka "▶ MULAI": begitu di-tap sekali, dalam waktu bersamaan
+layar akan **full screen otomatis**, **suara voice over langsung
+menyala**, dan **video facecam dipastikan benar-benar berjalan**
+(bukan cuma diam di frame pertama).
+
+- Kalau kamu live lewat **OBS Studio (Browser Source)**: OBS biasanya
+  sudah mengizinkan autoplay+suara secara default, jadi game akan
+  otomatis mulai sendiri tanpa perlu tap sama sekali (sudah dideteksi otomatis di kode).
+- Kalau kamu live langsung dari **HP** (screen record / cast layar
+  HP ke aplikasi live streaming): tap tombol "▶ MULAI" sekali sebelum
+  mulai merekam/live, setelah itu semuanya berjalan otomatis tanpa disentuh lagi.
 
 ## Cara Upload ke GitHub Pages
 
@@ -67,9 +90,9 @@ orbit-merge/
 
 ## Menggunakan untuk Live Streaming
 
-- Buka link GitHub Pages tadi di **OBS Studio** (Browser Source) atau di aplikasi live streaming HP yang mendukung "browser source" / "web overlay", atau langsung **screen record tab browser** di HP kalau live lewat aplikasi capture layar.
-- Karena banyak browser memblokir autoplay suara sebelum ada interaksi, disarankan **klik/tap sekali di layar** setelah halaman terbuka supaya voice over & musik langsung jalan (OBS Browser Source biasanya tidak kena blokir ini).
-- Biarkan game berjalan — semuanya otomatis: orb jatuh & menyatu, suara efek muncul, voice over bergantian, video "orang main" berputar di pojok atas.
+- Buka link GitHub Pages tadi di **OBS Studio** (Browser Source) atau di browser HP yang layarnya kamu cast/record ke aplikasi live streaming.
+- Tap tombol **▶ MULAI** sekali (kalau bukan lewat OBS) — layar langsung full screen dan semuanya mulai berjalan otomatis: planet jatuh & menyatu, efek suara muncul, voice over bergantian terus-menerus, video "orang main" berputar besar di pojok atas kanan.
+- Biarkan berjalan — game tidak akan pernah berhenti sendiri (auto-reset kalau papan penuh).
 
 ## Kustomisasi Cepat (di `js/config.js`)
 
