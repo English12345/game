@@ -27,6 +27,7 @@
       <div class="hud-block hud-center">
         <div class="next-label">BERIKUTNYA</div>
         <div class="next-orb" id="nextOrbPreview"></div>
+        <div class="next-orb-name" id="nextOrbLabel"></div>
       </div>
 
       <div class="hud-block hud-right">
@@ -57,9 +58,23 @@
   <!-- hidden audio element driven by js for voiceover playback -->
   <audio id="voiceoverPlayer" preload="auto"></audio>
 
+  <!-- Layar pembuka: wajib ada 1x tap supaya browser mengizinkan
+       suara + video autoplay + fullscreen (aturan keamanan browser,
+       tidak bisa dilewati tanpa interaksi sama sekali). -->
+  <div id="startOverlay">
+    <div class="start-glow"></div>
+    <div class="start-content">
+      <div class="start-orb"></div>
+      <h1>ORBIT MERGE</h1>
+      <p>Tap untuk mulai live — layar akan full screen &amp; suara otomatis menyala</p>
+      <button id="startBtn">▶ MULAI</button>
+    </div>
+  </div>
+
   <script src="js/config.js"></script>
   <script src="js/audio.js"></script>
   <script src="js/media-loop.js"></script>
+  <script src="js/planets.js"></script>
   <script src="js/physics.js"></script>
   <script src="js/autoplay.js"></script>
   <script src="js/game.js"></script>
