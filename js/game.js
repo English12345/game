@@ -114,7 +114,33 @@ class Game {
       // mencapai orbit maksimum -> ledakan besar + bonus
       this.burst(dx, dy, newBall.tier, 40);
       this.addScore(newBall.tier + 2);
+
+      // batasi jumlah matahari yang boleh menumpuk di papan supaya
+      // layar tidak penuh sesak dan tetap jelas ditonton
+      const sunCount = this.world.balls.filter(b => b.tier === newBall.tier).length;
+      if(sunCount >= CONFIG.MAX_SUNS_ON_BOARD){
+        this.triggerSupernova();
+      }
     }
+  }
+
+  triggerSupernova(){
+    sfx.reset();
+    this.comboEl.textContent = 'SUPERNOVA!';
+    this.comboEl.classList.remove('show');
+    void this.comboEl.offsetWidth;
+    this.comboEl.classList.add('show');
+
+    // ledakan besar untuk setiap matahari + bola lain di papan
+    for(const b of this.world.balls){
+      const count = b.tier === CONFIG.TIER_COUNT - 1 ? 50 : 10;
+      this.burst(b.x*this.scaleX, b.y*this.scaleY, b.tier, count);
+    }
+    this.addScore(CONFIG.TIER_COUNT + 6); // bonus skor spesial
+    this.world.clearAll();
+    this.round++;
+    this.roundEl.textContent = `Ronde ${this.round}`;
+    this.lastDropAt = performance.now() + 650; // jeda sesaat sebelum lanjut
   }
 
   maybeDrop(now){

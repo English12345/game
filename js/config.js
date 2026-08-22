@@ -36,6 +36,13 @@ const CONFIG = {
   GAMEOVER_SETTLE_MS: 1400,    // berapa lama orb harus menumpuk di atas garis sebelum game over
   DANGER_LINE_RATIO: 0.18,     // posisi garis bahaya (relatif tinggi canvas)
 
+  // Matahari (tier maksimal) tidak bisa merge lagi dengan matahari lain,
+  // jadi kalau dibiarkan akan menumpuk terus dan bikin layar penuh &
+  // membingungkan penonton baru. Begitu jumlah matahari di papan
+  // mencapai angka ini, semuanya meledak sekaligus (supernova) dan
+  // papan direset bersih, lalu lanjut ke ronde berikutnya.
+  MAX_SUNS_ON_BOARD: 5,
+
   // Bobot kemunculan tier saat spawn (index 0 = tier termudah)
   SPAWN_WEIGHTS: [40, 30, 18, 8, 4],
 
