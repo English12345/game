@@ -15,8 +15,8 @@ const CONFIG = {
   MAX_CONSECUTIVE_MISS: 3,
 
   // Jeda antar voiceover (ms) — diacak di antara MIN dan MAX
-  VOICEOVER_GAP_MIN: 2500,
-  VOICEOVER_GAP_MAX: 7000,
+  VOICEOVER_GAP_MIN: 3500,
+  VOICEOVER_GAP_MAX: 8500,
   VOICEOVER_VOLUME: 1.0,
 
   FACECAM_VOLUME: 0, // facecam selalu mute (biar tidak bentrok sama voiceover)
@@ -32,7 +32,7 @@ const CONFIG = {
   VIRTUAL_W: 400,
   VIRTUAL_H: 616,
 
-  DROP_COOLDOWN_MS: 620,       // seberapa sering AI menjatuhkan orb baru
+  DROP_COOLDOWN_MS: 950,       // seberapa sering AI menjatuhkan orb baru (diperlambat biar tidak terkesan spam)
   GAMEOVER_SETTLE_MS: 1400,    // berapa lama orb harus menumpuk di atas garis sebelum game over
   DANGER_LINE_RATIO: 0.18,     // posisi garis bahaya (relatif tinggi canvas)
 
@@ -57,5 +57,5 @@ const CONFIG = {
     'Tetap di sini, orbit berikutnya bakal lebih gede',
     'Chat, tebak orbit apa yang muncul selanjutnya!'
   ],
-  VIBE_ROTATE_MS: 6000,
+  VIBE_ROTATE_MS: 8500,
 };
