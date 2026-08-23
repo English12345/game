@@ -1,0 +1,73 @@
+name: YouTube 24/7 Auto Stream
+
+on:
+  # Jalan otomatis setiap 5 jam 45 menit (sebelum limit 6 jam GitHub habis)
+  schedule:
+    - cron: '0 */5 * * *'      # trigger tiap 5 jam sebagai jaga-jaga
+    - cron: '45 */5 * * *'     # trigger tambahan di menit 45
+  # Trigger manual dari tab Actions kalau perlu restart darurat
+  workflow_dispatch:
+
+# Mencegah 2 job jalan bersamaan (rebutan bandwidth/stream key)
+concurrency:
+  group: youtube-live-stream
+  cancel-in-progress: false
+
+jobs:
+  stream:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350   # ~5 jam 50 menit, di bawah limit 360 menit (6 jam)
+
+    steps:
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb chromium-browser ffmpeg pulseaudio x11-utils
+
+      - name: Start virtual display (Xvfb)
+        run: |
+          Xvfb :99 -screen 0 1280x720x24 &
+          sleep 2
+          echo "DISPLAY=:99" >> $GITHUB_ENV
+
+      - name: Start virtual audio (PulseAudio)
+        run: |
+          pulseaudio -D --exit-idle-time=-1 --disallow-exit
+          sleep 2
+          pactl load-module module-null-sink sink_name=virtual_speaker
+          pactl set-default-sink virtual_speaker
+          echo "Audio sink ready"
+
+      - name: Launch Orbit Merge in Chromium
+        env:
+          DISPLAY: ':99'
+        run: |
+          nohup chromium-browser \
+            --kiosk \
+            --autoplay-policy=no-user-gesture-required \
+            --use-fake-ui-for-media-stream \
+            --disable-infobars \
+            --window-position=0,0 \
+            --window-size=1280,720 \
+            --start-fullscreen \
+            --no-first-run \
+            --disable-session-crashed-bubble \
+            "https://english12345.github.io/game/" > chromium.log 2>&1 &
+          sleep 15
+          echo "Chromium launched"
+
+      - name: Stream to YouTube via FFmpeg
+        env:
+          DISPLAY: ':99'
+          STREAM_KEY: ${{ secrets.YOUTUBE_STREAM_KEY }}
+        run: |
+          ffmpeg \
+            -f x11grab -video_size 1280x720 -framerate 30 -i :99.0 \
+            -f pulse -i virtual_speaker.monitor \
+            -c:v libx264 -preset veryfast -tune zerolatency \
+            -b:v 3000k -maxrate 3000k -bufsize 6000k \
+            -pix_fmt yuv420p -g 60 -r 30 \
+            -c:a aac -b:a 128k -ar 44100 \
+            -f flv "rtmp://a.rtmp.youtube.com/live2/${STREAM_KEY}" \
+            -t 20700
+        # -t 20700 detik = 5 jam 45 menit, berhenti sebelum job GitHub di-kill paksa
