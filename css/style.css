@@ -12,6 +12,13 @@
 
   --font-display: 'Space Grotesk', sans-serif;
   --font-body:    'Inter', sans-serif;
+
+  /* Jarak aman dari tepi layar (menghormati notch/status-bar HP
+     dan tetap kelihatan penuh saat direkam / di-live-kan). */
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-l: env(safe-area-inset-left, 0px);
+  --safe-r: env(safe-area-inset-right, 0px);
 }
 
 *{ box-sizing:border-box; margin:0; padding:0; }
@@ -26,15 +33,15 @@ html,body{
   user-select:none;
 }
 
+/* #stage adalah persis 1 layar penuh (dipakai utuh oleh perekam
+   layar / OBS saat live vertikal) — SEMUA elemen di dalamnya
+   posisinya absolute/inset:0 supaya tidak ada bagian yang
+   "mencuri" tinggi layar dan menyisakan ruang kosong atas-bawah. */
 #stage{
   position:relative;
-  display:flex;
-  flex-direction:column;
   width:100vw;
   height:100vh;
   height:100dvh;
-  max-width:none;
-  margin:0 auto;
   overflow:hidden;
   background:
     radial-gradient(circle at 20% 0%, rgba(124,108,255,0.3), transparent 55%),
@@ -53,15 +60,60 @@ html,body{
   opacity:0.8;
 }
 
-/* ---------------- HUD ---------------- */
-#hud{
+/* -------------- Game area / frame -------------- */
+/* Full-bleed: gameArea & gameFrame mengisi 100% dari #stage, tanpa
+   aspect-ratio dan tanpa padding besar. Ini bikin game selalu
+   "sebesar layar" apapun rasio device-nya (proporsional & tidak
+   ter-zoom kecil), dan tidak ada spasi kosong di atas/bawah yang
+   bisa terpotong software live streaming. */
+#gameArea{
+  position:absolute;
+  inset:0;
+  z-index:2;
+}
+
+#gameFrame{
   position:relative;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+}
+
+#gameCanvas{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  display:block;
+}
+
+#dangerLine{
+  position:absolute;
+  left:0; right:0;
+  top:18%;
+  height:1px;
+  background:repeating-linear-gradient(90deg, rgba(255,84,112,0.5) 0 8px, transparent 8px 16px);
+  z-index:3;
+}
+
+/* ---------------- HUD (overlay tipis, tidak makan tempat) ---------------- */
+#hud{
+  position:absolute;
+  top:0; left:0; right:0;
   z-index:5;
-  flex:0 0 auto;
   display:flex;
   align-items:flex-start;
   justify-content:space-between;
-  padding:18px 16px 10px;
+  gap:8px;
+  padding:
+    calc(12px + var(--safe-t))
+    calc(14px + var(--safe-r))
+    18px
+    calc(14px + var(--safe-l));
+  /* scrim lembut supaya teks tetap terbaca di atas game tanpa
+     menutupi/memakan ruang gameplay */
+  background:linear-gradient(180deg, rgba(5,6,14,0.55) 0%, rgba(5,6,14,0.0) 100%);
+  pointer-events:none;
 }
 
 .hud-block{ display:flex; flex-direction:column; }
@@ -71,7 +123,7 @@ html,body{
 .hud-right{ align-items:flex-end; gap:6px; }
 
 .hud-label, .next-label{
-  font-size:10px;
+  font-size:clamp(9px, 2.4vw, 11px);
   letter-spacing:0.18em;
   color:var(--ink-dim);
   font-weight:600;
@@ -79,7 +131,7 @@ html,body{
 
 .hud-value{
   font-family:var(--font-display);
-  font-size:34px;
+  font-size:clamp(22px, 7vw, 32px);
   font-weight:700;
   line-height:1.05;
   background:linear-gradient(90deg, var(--cyan), var(--violet));
@@ -90,15 +142,15 @@ html,body{
 }
 
 .hud-sub{
-  font-size:11px;
+  font-size:clamp(9px, 2.4vw, 11px);
   color:var(--ink-dim);
   margin-top:2px;
   font-weight:500;
 }
 
 .next-orb{
-  width:34px;
-  height:34px;
+  width:clamp(24px, 6vw, 32px);
+  height:clamp(24px, 6vw, 32px);
   border-radius:50%;
   margin-top:4px;
   background:radial-gradient(circle at 32% 28%, #fff, var(--gold) 45%, #b97e1c 100%);
@@ -108,7 +160,7 @@ html,body{
 
 .next-orb-name{
   margin-top:5px;
-  font-size:10.5px;
+  font-size:clamp(9px, 2.2vw, 10.5px);
   font-weight:600;
   color:var(--ink-dim);
   letter-spacing:0.03em;
@@ -116,13 +168,14 @@ html,body{
 
 .facecam-wrap{
   position:relative;
-  width:104px;
-  height:104px;
-  border-radius:26px;
+  width:clamp(56px, 16vw, 76px);
+  height:clamp(56px, 16vw, 76px);
+  border-radius:20px;
   overflow:hidden;
   background:var(--glass);
   border:1px solid var(--line);
   box-shadow:0 8px 24px rgba(0,0,0,0.35);
+  pointer-events:auto;
 }
 
 .facecam-wrap video{
@@ -144,7 +197,7 @@ html,body{
 .facecam-ring{
   position:absolute;
   inset:-2px;
-  border-radius:28px;
+  border-radius:22px;
   border:2.5px solid transparent;
   background:conic-gradient(var(--cyan), var(--violet), var(--pink), var(--cyan)) border-box;
   -webkit-mask:linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0);
@@ -186,7 +239,7 @@ html,body{
   z-index:6;
   font-family:var(--font-display);
   font-weight:700;
-  font-size:30px;
+  font-size:clamp(22px, 8vw, 34px);
   letter-spacing:0.02em;
   color:var(--gold);
   text-shadow:0 0 30px rgba(255,204,102,0.7);
@@ -204,65 +257,22 @@ html,body{
   100%{ opacity:0; transform:translate(-50%,-60%) scale(1); }
 }
 
-/* -------------- Game area / frame -------------- */
-/* #gameArea takes up all leftover vertical space between the HUD
-   and the bottom bar, and centers #gameFrame inside it — this is
-   what keeps the layout proportional instead of clumping
-   everything near the top when the stage is tall (fullscreen). */
-#gameArea{
-  position:relative;
-  z-index:2;
-  flex:1 1 auto;
-  min-height:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:4px 14px 10px;
-}
-
-#gameFrame{
-  position:relative;
-  height:100%;
-  width:auto;
-  max-width:100%;
-  aspect-ratio: 3 / 4.6;
-  border-radius:26px;
-  background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
-  border:1px solid var(--line);
-  box-shadow:
-    0 0 0 1px rgba(255,255,255,0.02) inset,
-    0 30px 60px rgba(0,0,0,0.45),
-    0 0 60px rgba(124,108,255,0.08);
-  overflow:hidden;
-}
-
-#gameCanvas{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  display:block;
-}
-
-#dangerLine{
-  position:absolute;
-  left:0; right:0;
-  top:18%;
-  height:1px;
-  background:repeating-linear-gradient(90deg, rgba(255,84,112,0.5) 0 8px, transparent 8px 16px);
-  z-index:3;
-}
-
-/* -------------- Bottom bar -------------- */
+/* -------------- Bottom bar (overlay tipis) -------------- */
 #bottomBar{
-  position:relative;
+  position:absolute;
+  left:0; right:0; bottom:0;
   z-index:5;
-  flex:0 0 auto;
   text-align:center;
-  padding:14px 20px 20px;
+  padding:
+    22px
+    calc(20px + var(--safe-r))
+    calc(16px + var(--safe-b))
+    calc(20px + var(--safe-l));
+  background:linear-gradient(0deg, rgba(5,6,14,0.6) 0%, rgba(5,6,14,0.0) 100%);
+  pointer-events:none;
 }
 #vibeText{
-  font-size:12.5px;
+  font-size:clamp(11px, 3vw, 13px);
   color:var(--ink-dim);
   font-weight:500;
   letter-spacing:0.01em;
@@ -354,11 +364,11 @@ html,body{
 
 /* -------------- Responsive -------------- */
 @media (max-height:700px){
-  .hud-value{ font-size:26px; }
-  #gameArea{ padding-top:0; padding-bottom:6px; }
-  #gameFrame{ aspect-ratio:3/4.1; }
+  .hud-value{ font-size:clamp(20px, 6.5vw, 26px); }
+  #hud{ padding-top:calc(8px + var(--safe-t)); }
+  #bottomBar{ padding-top:14px; }
 }
 
 @media (max-width:360px){
-  .facecam-wrap{ width:84px; height:84px; }
+  .facecam-wrap{ width:clamp(50px, 15vw, 64px); height:clamp(50px, 15vw, 64px); }
 }
