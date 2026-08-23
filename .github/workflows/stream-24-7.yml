@@ -58,11 +58,21 @@ jobs:
           sleep 15
           echo "Chromium launched"
 
-      - name: Stream to YouTube via FFmpeg
+      - name: Stream to YouTube via FFmpeg (utama + vertikal/Shorts)
         env:
           DISPLAY: ':99'
           STREAM_KEY: ${{ secrets.YOUTUBE_STREAM_KEY }}
+          # Kunci kedua ini didapat dari YouTube Studio -> Streaming ganda ->
+          # Pilih kunci: Encoder. Simpan sebagai secret baru bernama
+          # YOUTUBE_STREAM_KEY_VERTICAL di Settings -> Secrets and variables
+          # -> Actions. Kalau secret ini belum diisi, baris tee di bawah akan
+          # error rtmp kosong -- jadi wajib diisi dulu sebelum job jalan.
+          STREAM_KEY_VERTICAL: ${{ secrets.YOUTUBE_STREAM_KEY_VERTICAL }}
         run: |
+          # -f tee mengirim 1 hasil encode yang sama ke 2 tujuan RTMP
+          # sekaligus (hemat CPU dibanding jalankan ffmpeg 2x terpisah):
+          #  1) kunci utama       -> siaran live biasa
+          #  2) kunci vertikal    -> muncul juga di feed Shorts (Streaming Ganda)
           ffmpeg \
             -f x11grab -video_size 720x1560 -framerate 30 -i :99.0 \
             -f pulse -i virtual_speaker.monitor \
@@ -70,6 +80,7 @@ jobs:
             -b:v 3000k -maxrate 3000k -bufsize 6000k \
             -pix_fmt yuv420p -g 60 -r 30 \
             -c:a aac -b:a 128k -ar 44100 \
-            -f flv "rtmp://a.rtmp.youtube.com/live2/${STREAM_KEY}" \
+            -f tee -map 0:v -map 1:a \
+            "[f=flv]rtmp://a.rtmp.youtube.com/live2/${STREAM_KEY}|[f=flv]rtmp://a.rtmp.youtube.com/live2/${STREAM_KEY_VERTICAL}" \
             -t 20700
         # -t 20700 detik = 5 jam 45 menit, berhenti sebelum job GitHub di-kill paksa
