@@ -33,7 +33,7 @@ html,body{
   width:100vw;
   height:100vh;
   height:100dvh;
-  max-width:520px;
+  max-width:none;
   margin:0 auto;
   overflow:hidden;
   background:
@@ -224,7 +224,7 @@ html,body{
   position:relative;
   height:100%;
   width:auto;
-  max-width:min(420px, 100%);
+  max-width:100%;
   aspect-ratio: 3 / 4.6;
   border-radius:26px;
   background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
