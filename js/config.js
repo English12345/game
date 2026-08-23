@@ -29,8 +29,11 @@ const CONFIG = {
   BASE_RADIUS: 15,             // radius tier pertama (px, di ruang virtual 400x616)
   RADIUS_GROWTH: 1.28,         // pertambahan radius tiap naik tier
 
+  // Rasio dunia virtual sekarang mengikuti rasio layar HP vertikal
+  // sungguhan (9:16) karena game sekarang full-bleed mengisi seluruh
+  // layar (bukan kotak kecil di tengah lagi).
   VIRTUAL_W: 400,
-  VIRTUAL_H: 616,
+  VIRTUAL_H: 711,
 
   DROP_COOLDOWN_MS: 950,       // seberapa sering AI menjatuhkan orb baru (diperlambat biar tidak terkesan spam)
   GAMEOVER_SETTLE_MS: 1400,    // berapa lama orb harus menumpuk di atas garis sebelum game over
