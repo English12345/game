@@ -26,7 +26,11 @@ jobs:
 
       - name: Start virtual display (Xvfb)
         run: |
-          Xvfb :99 -screen 0 720x1560x24 &
+          # 720x1280 = rasio 9:16 asli (standar vertikal YouTube).
+          # SEBELUMNYA 720x1560 -> rasionya 0.46 (bukan 9:16/0.56),
+          # jadi YouTube otomatis crop kelebihan tingginya dan yang
+          # kelihatan cuma sepotong bagian atas (makanya "ke-zoom").
+          Xvfb :99 -screen 0 720x1280x24 &
           sleep 2
           echo "DISPLAY=:99" >> $GITHUB_ENV
 
@@ -48,7 +52,7 @@ jobs:
             --use-fake-ui-for-media-stream \
             --disable-infobars \
             --window-position=0,0 \
-            --window-size=720,1560 \
+            --window-size=720,1280 \
             --start-fullscreen \
             --no-first-run \
             --disable-session-crashed-bubble \
@@ -74,7 +78,7 @@ jobs:
           #  1) kunci utama       -> siaran live biasa
           #  2) kunci vertikal    -> muncul juga di feed Shorts (Streaming Ganda)
           ffmpeg \
-            -f x11grab -video_size 720x1560 -framerate 30 -i :99.0 \
+            -f x11grab -video_size 720x1280 -framerate 30 -i :99.0 \
             -f pulse -i virtual_speaker.monitor \
             -c:v libx264 -preset veryfast -tune zerolatency \
             -b:v 3000k -maxrate 3000k -bufsize 6000k \
