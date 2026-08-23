@@ -119,8 +119,8 @@ html,body{
 .hud-block{ display:flex; flex-direction:column; }
 
 .hud-left{ align-items:flex-start; }
-.hud-center{ align-items:center; flex:1; }
-.hud-right{ align-items:flex-end; gap:6px; }
+.hud-center{ align-items:center; flex:1 1 auto; min-width:0; }
+.hud-right{ align-items:flex-end; gap:6px; flex:0 0 auto; }
 
 .hud-label, .next-label{
   font-size:clamp(9px, 2.4vw, 11px);
@@ -168,13 +168,13 @@ html,body{
 
 .facecam-wrap{
   position:relative;
-  width:clamp(56px, 16vw, 76px);
-  height:clamp(56px, 16vw, 76px);
-  border-radius:20px;
+  width:clamp(130px, 38vw, 210px);
+  height:clamp(130px, 38vw, 210px);
+  border-radius:24px;
   overflow:hidden;
   background:var(--glass);
-  border:1px solid var(--line);
-  box-shadow:0 8px 24px rgba(0,0,0,0.35);
+  border:1.5px solid var(--line);
+  box-shadow:0 10px 30px rgba(0,0,0,0.45);
   pointer-events:auto;
 }
 
@@ -197,8 +197,8 @@ html,body{
 .facecam-ring{
   position:absolute;
   inset:-2px;
-  border-radius:22px;
-  border:2.5px solid transparent;
+  border-radius:26px;
+  border:3px solid transparent;
   background:conic-gradient(var(--cyan), var(--violet), var(--pink), var(--cyan)) border-box;
   -webkit-mask:linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0);
   -webkit-mask-composite:xor;
@@ -370,5 +370,5 @@ html,body{
 }
 
 @media (max-width:360px){
-  .facecam-wrap{ width:clamp(50px, 15vw, 64px); height:clamp(50px, 15vw, 64px); }
+  .facecam-wrap{ width:clamp(110px, 40vw, 150px); height:clamp(110px, 40vw, 150px); }
 }
