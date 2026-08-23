@@ -26,7 +26,7 @@ jobs:
 
       - name: Start virtual display (Xvfb)
         run: |
-          Xvfb :99 -screen 0 1280x720x24 &
+          Xvfb :99 -screen 0 720x1280x24 &
           sleep 2
           echo "DISPLAY=:99" >> $GITHUB_ENV
 
@@ -48,7 +48,7 @@ jobs:
             --use-fake-ui-for-media-stream \
             --disable-infobars \
             --window-position=0,0 \
-            --window-size=1280,720 \
+            --window-size=720,1280 \
             --start-fullscreen \
             --no-first-run \
             --disable-session-crashed-bubble \
@@ -63,7 +63,7 @@ jobs:
           STREAM_KEY: ${{ secrets.YOUTUBE_STREAM_KEY }}
         run: |
           ffmpeg \
-            -f x11grab -video_size 1280x720 -framerate 30 -i :99.0 \
+            -f x11grab -video_size 720x1280 -framerate 30 -i :99.0 \
             -f pulse -i virtual_speaker.monitor \
             -c:v libx264 -preset veryfast -tune zerolatency \
             -b:v 3000k -maxrate 3000k -bufsize 6000k \
